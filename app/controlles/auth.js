@@ -109,7 +109,7 @@ const loginCbYt = async (req, res, next) => {
                     // res.redirect(`${process.env.FRONT_URL}/test/${objQuery.course}/${objQuery.test}?sub_confirmation=${isSub.id}`)
                 } else {
                     console.log('** ERROR **', JSON.stringify(rq))
-                    res.redirect('/')
+                    res.redirect(`${process.env.FRONT_URL}?error=SESSION_EXPIRED`)
                 }
             } catch (e) {
                 console.log(e)
