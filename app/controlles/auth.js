@@ -98,7 +98,7 @@ const loginCbYt = async (req, res, next) => {
                     const userReturn = await saveUser({
                         email: newData.email,
                         idYt: newData.sub,
-                        name: newData.name,
+                        name: newData.name || newData.email,
                         password: '.........',
                         avatar: '',
                         isSub: newData.isSub
@@ -109,11 +109,11 @@ const loginCbYt = async (req, res, next) => {
                     // res.redirect(`${process.env.FRONT_URL}/test/${objQuery.course}/${objQuery.test}?sub_confirmation=${isSub.id}`)
                 } else {
                     console.log('** ERROR **', JSON.stringify(rq))
-                    res.redirect(`${process.env.FRONT_URL}?error=SESSION_EXPIRED`)
+                    res.redirect(`${process.env.FRONT_URL}?error=SESSION_ERROR`)
                 }
             } catch (e) {
                 console.log(e)
-                res.redirect(`${process.env.FRONT_URL}?error_login=youtube`)
+                res.redirect(`${process.env.FRONT_URL}?error=SESSION_ERROR`)
             }
         }
     )(req, res, next)
