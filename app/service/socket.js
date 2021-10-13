@@ -1,13 +1,32 @@
 const ROOM = 'room-winner';
 const raffleModel = require('../models/raffle')
+const blackListModel = require('../models/backList')
 const commentsModel = require('../models/comments')
 
+const getBlackList = () => {
+    return blackListModel.find({})
+}
+
 const getRandom = async () => {
-    const random = await commentsModel.aggregate([{$sample: {size: 1}}])
+    let blackListArray = await getBlackList()
+    blackListArray = blackListArray.map(a => a.url)
+
+    const random = await commentsModel.aggregate(
+        [
+            {
+                $match: {
+                    authorChannelUrl: {$nin: [...blackListArray]}
+                }
+            },
+            {
+                $sample: {size: 1}
+            }
+        ])
     const dataRaffle = {
         winner: random.pop(),
         dynamic: 'process'
     }
+
     return raffleModel.findOneAndUpdate({name: 'pick'}, dataRaffle,
         {
             new: true,
