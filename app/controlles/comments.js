@@ -5,16 +5,21 @@ const commentModel = require('../models/comments')
 const {httpRequest$} = require('../helpers/utils')
 
 
-const filterData = (data = [], name) => {
+const filterData = (data = [], flag = false) => {
+    const hash = process.env.HASH || null
     return data.map(({snippet}) => {
         const {videoId, topLevelComment} = snippet;
+
+        //TODO: FIlter   const hash = process.env.HASH || null
         const dataRawBefore = {
             comment: topLevelComment.snippet.textOriginal,
             author: topLevelComment.snippet.authorDisplayName,
             authorChannelUrl: topLevelComment.snippet.authorChannelUrl,
             video: videoId
         };
-        return (dataRawBefore.author === name) ? dataRawBefore : null;
+
+        // return (dataRawBefore.author === name) ? dataRawBefore : null;
+        return (dataRawBefore.comment.includes(hash)) ? dataRawBefore : null;
     })
 }
 
@@ -29,6 +34,8 @@ const startCall = (video = '') => {
             `&alt=json&prettyPrint=true`,
             `&key=${process.env.API_GOOGLE}`
         ].join('')
+
+        console.log(url)
 
         const childCall$ = (token) => httpRequest$(`${url}&pageToken=${token}`, 'get')
             .pipe(
@@ -129,9 +136,12 @@ const getItems = async (req, res) => {
         video1: callVideo1$,
         video2: callVideo2$
     }
-    res.send({data: resultFinal})
 
     await saveComments(resultFinal)
+
+    res.send({data: resultFinal})
+
+
 }
 
 
